@@ -1,1 +1,2 @@
-# huaweicloud-sdk-nodejs-obs
+
+Version:3.0.2

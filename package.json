@@ -1,0 +1,15 @@
+{
+  "name": "esdk-obs-nodejs",
+  "version": "3.0.2",
+  "description": "esdk-obs-nodejs",
+  "engines": {
+    "node": ">=0.12.7"
+  },
+  "dependencies": {
+    "log4js": "^1.1.1",
+    "xml2js": "^0.4.17"
+  },
+  "main" : "lib/obs.js",
+  "devDependencies": {
+  }
+}
