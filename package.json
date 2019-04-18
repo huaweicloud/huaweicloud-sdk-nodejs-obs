@@ -1,6 +1,6 @@
 {
   "name": "esdk-obs-nodejs",
-  "version": "3.1.2",
+  "version": "3.1.3",
   "description": "esdk-obs-nodejs",
   "engines": {
     "node": ">=0.12.7"
