@@ -1,3 +1,15 @@
+Version 3.1.3
+
+新特性：
+1. 日志模块支持与已有的配置集成；
+
+资料&demo：
+
+修复问题：
+1. 修复ObsClient.listObjects/ObsClient.listVersions/ObsClient.getObject/ObsClient.getObjectMetadata/ObsClient.copyObject/ObsClient.listParts/ObsClient.copyPart接口响应中返回的LastModified字段不是UTC标准格式的问题；
+2. 修复ObsClient.close方法在长连接模式下无法正常断开链接的问题；
+
+-----------------------------------------------------------------------------------
 
 Version 3.1.2
 
@@ -11,3 +23,5 @@ Version 3.1.2
 
 修复问题：
 1. 修复创建桶接口（ObsClient.createBucket）由于协议协商导致报错信息不准确的问题；
+
+
