@@ -86,8 +86,8 @@ function doAction(msg,method, _url, content,headers){
  */
 let method = 'PUT';
 let res = obs.createSignedUrlSync({Method : method, Bucket : bucketName});
-let location = 'your-location';
-let content  = `<CreateBucketConfiguration><Location>${location}</Location></CreateBucketConfiguration>`;
+let loc = 'your-location';
+let content  = `<CreateBucketConfiguration><Location>${loc}</Location></CreateBucketConfiguration>`;
 doAction('Create bucket', method, res.SignedUrl, content, res.ActualSignedRequestHeaders);
 
 

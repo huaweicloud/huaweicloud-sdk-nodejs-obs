@@ -1,15 +1,25 @@
 {
   "name": "esdk-obs-nodejs",
-  "version": "3.0.2",
+  "version": "3.1.2",
   "description": "esdk-obs-nodejs",
   "engines": {
     "node": ">=0.12.7"
   },
   "dependencies": {
-    "log4js": "^1.1.1",
+	"log4js": "^3.0.6",
     "xml2js": "^0.4.17"
   },
   "main" : "lib/obs.js",
-  "devDependencies": {
-  }
+  "devDependencies": {},
+  "directories": {
+     "example": "examples",
+     "lib": "lib"
+  },
+  
+  "scripts": {
+      "test": "echo \"Error:no test specified\" && exit 1"
+  },
+  "author": "",
+  
+  "license": "Apache-2.0"
 }

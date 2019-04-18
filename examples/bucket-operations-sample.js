@@ -34,8 +34,6 @@ var bucketName = 'my-obs-bucket-demo';
  */
 obs.createBucket({
 	Bucket : bucketName,
-}).catch(function(err){
-	console.error('err:' + err);
 }).then((result) => {
 	if(result.CommonMsg.Status > 300){
 		console.error('Create bucket failed.');
@@ -356,6 +354,8 @@ obs.createBucket({
 		}
 	});
 	
+}).catch(function(err){
+	console.error('err:' + err);
 });
 
 

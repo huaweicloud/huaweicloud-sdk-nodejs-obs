@@ -31,6 +31,7 @@ var objectKey = 'my-obs-object-key-demo';
 /*
  * Create bucket 
  */
+var uploadId;
 obs.createBucket({
 	Bucket : bucketName
 }).then((result) => {
@@ -47,7 +48,7 @@ obs.createBucket({
 	}
 }).then((result) => {
 	if(result && result.CommonMsg.Status < 300){
-		var uploadId = result.InterfaceResult.UploadId;
+		uploadId = result.InterfaceResult.UploadId;
 		 /*
          * Step 2: upload a part
          */
