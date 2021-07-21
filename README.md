@@ -1,52 +1,58 @@
-﻿Version 3.1.4
+﻿Version 3.21.6
 
-新特性：
-1. 支持初始化ObsClient时指定max_connections参数设置最大HTTP连接数；
-2. 支持初始化ObsClient时指定http_agent参数和https_agent参数定制HTTP代理对象；
-3. 支持初始化ObsClient时指定user_agent参数；
-4. 所有接口支持返回OBS服务内部错误码Indicator；
-5. 日志新增socket连接建立耗时打印；
-6. 新增ObsClient.setObjectMetadata接口，用于修改对象元数据；
-7. ObsClient.putObject/ObsClient.uploadPart/ObsClient.appendObject新增ProgressCallback参数，用于获取上传进度；
+New Features: None
+
+Documentation & Demo: None
+
+Resolved Issues:
+
+1. [Function] Fixed the issue that data inconsistency may occur when the resumable download API is used in some scenarios.
+2. [Function] Modified the intelligent segmentation logic for resumable download and upload.
+3. [Function] Fixed the issue that the resumable download of SSE-C encrypted objects fails.
+
+----
+Version 3.1.4
+
+New Features:
+1. Supported the configuration of the maximum HTTP connections by specifying parameter max_connections during ObsClient initialization.
+2. Supported the HTTP agent customization by specifying parameters http_agent and https_agent when during ObsClient initialization.
+3. Supported the configuration of parameter user_agent during ObsClient initialization.
+4. Allowed all APIs to return Indicator, the internal error code of OBS.
+5. Added the log printing of the time required for setting up a socket connection.
+6. Added the ObsClient.setObjectMetadata API for modifying object metadata.
+7. Added parameter ProgressCallback into ObsClient.putObject, ObsClient.uploadPart, and ObsClient.appendObject to obtain the upload progress.
 
 
-资料&demo：
+Documentation & Demo: None
 
-修复问题：
+Resolved Issues:
 
-1. 【功能】对必选字段增加非空字符串/非null/非undefined的校验；
-2. 【功能】解决请求发生3xx异常时，无法正常获取OBS服务端返回异常信息的问题；
-3. 【功能】修复ObsClient.putObject/ObsClient.appendObject/ObsClient.InitiateMultipartUpload设置StorageClass参数报错的问题；
-
-
+1. [Function] Added the verification of empty strings, null values, or undefined values for mandatory fields.
+2. [Function] Fixed the issue that the error message returned by the OBS server cannot be obtained when error code 3xx is returned for a request.
+3. [Function] Fixed the issue that an error occurs when parameter StorageClass is configured for ObsClient.putObject, ObsClient.appendObject, and ObsClient.InitiateMultipartUpload.
 -----------------------------------------------------------------------------------
 
 Version 3.1.3
 
-新特性：
-1. 日志模块支持与已有的配置集成；
+New Features:
+1. Allowed the log module to integrate the existing configurations.
 
-资料&demo：
+Documentation & Demo: None
 
-修复问题：
-1. 修复ObsClient.listObjects/ObsClient.listVersions/ObsClient.getObject/ObsClient.getObjectMetadata/ObsClient.copyObject/ObsClient.listParts/ObsClient.copyPart接口响应中返回的LastModified字段不是UTC标准格式的问题；
-2. 修复ObsClient.close方法在长连接模式下无法正常断开链接的问题；
-
+Resolved Issues:
+1. Fixed the issue that the LastModified field is not in the UTC format in the responses returned by the following APIs: ObsClient.listObjects, ObsClient.listVersions, ObsClient.getObject, ObsClient.getObjectMetadata, ObsClient.copyObject, ObsClient.listParts, and ObsClient.copyPart.
+2. Fixed the issue that ObsClient.close cannot be used to disconnect the link in persistent connection mode.
 -----------------------------------------------------------------------------------
 
 Version 3.1.2
 
-新特性：
-1. 升级log4js依赖到最新版本；
-2. 桶事件通知接口（ObsClient.setBucketNotification/ObsClient.getBucketNotification）新增对函数工作流服务配置和查询的支持；
+New Features:
+1. Upgraded the log4js dependency to the latest version.
+2. Supported the FunctionGraph configuration and query in the bucket event notification APIs ObsClient.setBucketNotification and ObsClient.getBucketNotification.
 
-资料&demo：
-1. 开发指南事件通知章节，新增对函数工作流服务配置的介绍；
-2. 接口参考设置/获取桶的时间通知配置章节，新增函数工作流服务配置的参数描述；
+Documentation & Demo:
+1. Added the FunctionGraph configuration description in the event notification section of the Developer Guide.
+2. Added the parameter description of FunctionGraph in sections related to configuring and obtaining bucket event notifications in the API Reference.
 
-修复问题：
-1. 修复创建桶接口（ObsClient.createBucket）由于协议协商导致报错信息不准确的问题；
-
-
-
-
+Resolved Issues:
+Fixed the issue that the error message reported by the ObsClient.createBucket API is incorrect due to protocol negotiation.
