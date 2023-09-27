@@ -1,13 +1,13 @@
 {
   "name": "esdk-obs-nodejs",
-  "version": "3.21.6",
+  "version": "3.23.9",
   "description": "esdk-obs-nodejs",
   "engines": {
     "node": ">=0.12.7"
   },
   "dependencies": {
     "log4js": "^6.3.0",
-    "xml2js": "^0.4.23"
+    "fast-xml-parser": "^4.0.11"
   },
   "main" : "lib/obs.js",
   "devDependencies": {},

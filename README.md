@@ -1,4 +1,19 @@
-﻿Version 3.21.6
+﻿Version 3.23.9
+
+New Features:
+1. Supported the getObject,uploadFile and downloadFile ProgressCallback；
+2. Supported the Special character；
+3. Supported listBucket by pages；
+
+Documentation & Demo: None
+
+Resolved Issues:
+1. Fixed the issue that GetBucketMetadata RequestPayer parameter does not take effect;
+2. Added the x-image-save-object and x-image-save-bucket header；
+
+-----------------------------------------------------------------------------------
+
+Version 3.21.6
 
 New Features: None
 
