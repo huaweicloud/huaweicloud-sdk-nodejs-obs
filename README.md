@@ -1,4 +1,14 @@
-﻿Version 3.23.9
+﻿Version 3.23.11
+
+New Features:
+1. Added three API, ObsClient.setObjectTagging、ObsClient.getObjectTagging and ObsClient.deleteObjectTagging；
+2. ObsClient.uploadFile supports specifying the Expires parameter to set the expiration time of the uploaded object；
+
+Documentation & Demo: None
+
+-----------------------------------------------------------------------------------
+
+Version 3.23.9
 
 New Features:
 1. Supported the getObject,uploadFile and downloadFile ProgressCallback；
