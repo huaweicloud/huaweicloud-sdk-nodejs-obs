@@ -1,4 +1,13 @@
-﻿Version 3.23.11
+﻿Version 3.24.3
+
+New Features:
+1. Added the abort upload to the ObsClient.uploadFile API.
+
+Documentation & Demo: None
+
+-----------------------------------------------------------------------------------
+
+Version 3.23.11
 
 New Features:
 1. Added three API, ObsClient.setObjectTagging、ObsClient.getObjectTagging and ObsClient.deleteObjectTagging；
