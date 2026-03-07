@@ -1,4 +1,12 @@
-﻿Version 3.25.6
+﻿Version 3.26.2
+New Features:
+1. [Function] Automatically set the content type to application/wasm when uploading .wasm files
+
+Documentation & Demo: None
+
+-----------------------------------------------------------------------------------
+
+Version 3.25.6
 
 New Features:
 1. [Function] Add BPA API adaptation for buckets.
