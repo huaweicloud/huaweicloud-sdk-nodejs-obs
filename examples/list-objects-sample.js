@@ -18,31 +18,29 @@
  * from OBS using the OBS SDK for Nodejs.
  */
 'use strict';
+const os = require('os');
+const path = require('path');
  
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
 
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: '*** Provide your Access Key ***',
 	secret_access_key: '*** Provide your Secret Key ***',
 	server : 'https://your-endpoint'
 });
 
 
-var bucketName = 'my-obs-bucket-demo';
-var keys = [];
+const bucketName = 'my-obs-bucket-demo';
+const keys = [];
 
 /*
  * Create bucket 
@@ -53,11 +51,11 @@ obs.createBucket({
 	if(result.CommonMsg.Status < 300){
 		console.log('Create bucket for demo\n');
 		
-		var events = require('events');
-		var eventEmitter = new events.EventEmitter();
-		var content = 'Hello OBS';
-		var keyPrefix = 'MyObjectKey';
-		var finishedCount = 0;
+		const events = require('events');
+		const eventEmitter = new events.EventEmitter();
+		const content = 'Hello OBS';
+		const keyPrefix = 'MyObjectKey';
+		let finishedCount = 0;
 		/*
          * First insert 100 objects for demo
          */
@@ -108,7 +106,7 @@ obs.createBucket({
 							console.log('\tETag-->' + result.InterfaceResult.Contents[j]['ETag']);
 						}
 						console.log('\n');
-						var theSecond10ObjectsMarker = result.InterfaceResult.NextMarker;
+						const theSecond10ObjectsMarker = result.InterfaceResult.NextMarker;
 						/*
 			             * List the second 10 objects using marker 
 			             */
@@ -160,7 +158,7 @@ obs.createBucket({
 												console.log('\tETag-->' + result.InterfaceResult.Contents[j]['ETag']);
 											}
 											console.log('\n');
-											if(result.InterfaceResult.IsTruncated === 'true'){
+											if(result.InterfaceResult.IsTruncated){
 												listAll(result.InterfaceResult.NextMarker, pageSize, pageIndex + 1);
 											}
 										}
@@ -179,13 +177,11 @@ obs.createBucket({
 		});
 		
 	}
-});
+}).catch((err) => { console.error(err); });
 
+let deleteObjectsFinished = false;
 
-var deleteObjectsFinished = false;
-
-var process = require('process');
-process.on('beforeExit', (code) => {
+process.on('beforeExit', async () => {
 	if(!deleteObjectsFinished){
 		obs.deleteObjects({
 			Bucket: bucketName,
@@ -212,7 +208,7 @@ process.on('beforeExit', (code) => {
 				}
 			}
 			obs.close();
-		});
+		}).catch((err) => { console.error(err); });
 		deleteObjectsFinished = true;
 	}
 });

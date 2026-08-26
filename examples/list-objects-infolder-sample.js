@@ -19,30 +19,28 @@
  */
 
 'use strict';
+const os = require('os');
+const path = require('path');
  
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
 
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: '*** Provide your Access Key ***',
 	secret_access_key: '*** Provide your Secret Key ***',
 	server : 'https://your-endpoint'
 });
 
-var bucketName = 'my-obs-bucket-demo';
-var keys = [];
+const bucketName = 'my-obs-bucket-demo';
+const keys = [];
 
 /*
  * Create bucket 
@@ -53,14 +51,14 @@ obs.createBucket({
 	if(result.CommonMsg.Status < 300){
 		console.log('Create bucket for demo\n');
 		
-		var events = require('events');
-		var eventEmitter = new events.EventEmitter();
-		var content = 'Hello OBS';
-		var keyPrefix = 'MyObjectKey';
-		var folderPrefix = 'src';
-		var subFolderPrefix = 'test';
+		const events = require('events');
+		const eventEmitter = new events.EventEmitter();
+		const content = 'Hello OBS';
+		const keyPrefix = 'MyObjectKey';
+		const folderPrefix = 'src';
+		const subFolderPrefix = 'test';
 		
-		var folderFinishedCount = 0;
+		let folderFinishedCount = 0;
 		/*
          * First prepare folders and sub folders
          */
@@ -83,7 +81,7 @@ obs.createBucket({
 							if(result.CommonMsg.Status < 300){
 								keys.push({Key: subKey});
 							}
-							if(folderFinishedCount === 3 * 5){
+							if(folderFinishedCount === 5 + 3 * 5){
 								eventEmitter.emit('Create folder finished');
 							}
 						});
@@ -92,7 +90,7 @@ obs.createBucket({
 			});
 		}
 		
-		var objectFinishedCount = 0;
+		let objectFinishedCount = 0;
 		eventEmitter.on('Create folder finished', () => {
 			/*
 	         * Insert 2 objects in each folder
@@ -100,7 +98,7 @@ obs.createBucket({
 			obs.listObjects({
 				Bucket: bucketName
 			}).then((result) => {
-				var length = 0;
+				let length = 0;
 				if(result.CommonMsg.Status < 300){
 					length += result.InterfaceResult.Contents.length;
 					for(let j=0;j<result.InterfaceResult.Contents.length;j++){
@@ -195,7 +193,7 @@ obs.createBucket({
 							}
 							console.log('\n');
 							
-							var listObjectsByPrefix = function(commonPrefixes){
+							const listObjectsByPrefix = function(commonPrefixes){
 								for(let i=0;i<commonPrefixes.length;i++){
 									obs.listObjects({
 										Bucket: bucketName,
@@ -231,9 +229,8 @@ obs.createBucket({
 });
 
 
-var process = require('process');
-var deleteObjectsFinished = false;
-process.on('beforeExit', (code) => {
+let deleteObjectsFinished = false;
+process.on('beforeExit', async () => {
 	if(!deleteObjectsFinished){
 		obs.deleteObjects({
 			Bucket: bucketName,
@@ -260,7 +257,7 @@ process.on('beforeExit', (code) => {
 				}
 			}
 			obs.close();
-		});
+		}).catch((err) => { console.error(err); });
 		deleteObjectsFinished = true;
 	}
 	

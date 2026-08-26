@@ -18,63 +18,38 @@
  * OBS using the OBS SDK for Nodejs.
  */
 'use strict';
+const os = require('os');
+const path = require('path');
  
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
 var	server = 'your-endpoint';
-var signature = 'obs';
-var ak = '*** Provide your Access Key ***';
-var sk = '*** Provide your Secret Key ***';
+const signature = 'obs';
+const ak = '*** Provide your Access Key ***';
+const sk = '*** Provide your Secret Key ***';
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: ak,
 	secret_access_key: sk,
 	server : 'http://' + server,
 	signature : signature
 });
 
-var pathLib = require('path');
-var sampleFilePath = '/temp/text.txt';
-var fs = require('fs');
-function mkdirsSync(dirname){
-    if(fs.existsSync(dirname)){
-        return true;
-    }else{
-        if(mkdirsSync(pathLib.dirname(dirname))){
-            fs.mkdirSync(dirname);
-            return true;
-        }
-    }
-}
+const pathLib = require('path');
+const { mkdirsSync, createSampleFileSync } = require('./utils');
+const sampleFilePath = path.join(os.tmpdir(), 'test.txt');
+const fs = require('fs');
 
-function createSampleFileSync(sampleFilePath){
-	if(!fs.existsSync(sampleFilePath)){
-		mkdirsSync(pathLib.dirname(sampleFilePath));
-		var fd = fs.openSync(sampleFilePath, 'w');
-		if(fd){
-			fs.writeSync(fd, String(Math.random()) + '\n');
-			fs.writeSync(fd, String(Math.random()) + '\n');
-			fs.writeSync(fd, String(Math.random()) + '\n');
-			fs.writeSync(fd, String(Math.random()) + '\n');
-			fs.closeSync(fd);
-		}
-	}
-	return sampleFilePath;
-}
 
-var bucketName = 'my-obs-bucket-demo';
-var objectKey = 'my-obs-object-key-demo';
+const bucketName = 'my-obs-bucket-demo';
+const objectKey = 'my-obs-object-key-demo';
 
 /*
  * Create bucket 
@@ -93,9 +68,9 @@ obs.createBucket({
 		/*
 		 * Claim a post object request
 		 */
-		var formParams = {'content-type': 'text/plain'};
+		const formParams = {'content-type': 'text/plain'};
 		formParams[signature === 'obs' ? 'x-obs-acl' : 'acl'] = obs.enums.AclPublicRead;
-		var res = obs.createPostSignatureSync({Bucket: bucketName, Key: objectKey, Expires:3600, FormParams: formParams});
+		const res = obs.createPostSignatureSync({Bucket: bucketName, Key: objectKey, Expires:3600, FormParams: formParams});
 		
 		/*
 		 * Start to post object
@@ -111,17 +86,17 @@ obs.createBucket({
 		
 		console.log('Creating object in browser-based way');
 		
-		var boundary = '9431149156168';
+		const boundary = '9431149156168';
 		
 		/*
 		 * Construct form data
 		 */
-		var buffers = [];
-		var first = true;
+		const buffers = [];
+		const first = true;
 		
-		var contentLength = 0;
+		const contentLength = 0;
 		
-		var buffer = [];
+		const buffer = [];
 		for(let key in formParams){
 			if(!first){
 				buffer.push('\r\n');
@@ -177,8 +152,8 @@ obs.createBucket({
 		 */
 		contentLength += fs.lstatSync(sampleFilePath).size;
 		
-		var http = require('http');
-		var req = http.request({
+		const http = require('http');
+		const req = http.request({
 			method : 'POST',
 			host : bucketName + '.' + server,
 			port : 80,
@@ -220,7 +195,7 @@ obs.createBucket({
 		/*
 		 * Send file data
 		 */
-		var readable = fs.createReadStream(sampleFilePath);
+		const readable = fs.createReadStream(sampleFilePath);
 		readable.on('data', (data) => {
 			req.write(data);
 		}).on('end', () => {
@@ -229,15 +204,15 @@ obs.createBucket({
 			 */
 			req.write(buffers[2]);
 			req.end();
-		}).on('err', ()=>{
+		}).on('error', ()=>{
 			req.abort();
 		});
 	}
 });
 
 
-var process = require('process');
-process.on('beforeExit', (code) => {
+const process = require('process');
+process.on('beforeExit', async () => {
 	if(fs.existsSync(sampleFilePath)){
 		fs.unlinkSync(sampleFilePath);
 	}

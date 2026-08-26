@@ -19,65 +19,33 @@
  */
 
 'use strict';
- var fs = require('fs');
- 
-var ObsClient;
+const os = require('os');
+const path = require('path');
+const fs = require('fs');
+
+const { mkdirsSync, createLargeSampleFileSync } = require('./utils');
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: '*** Provide your Access Key ***',
 	secret_access_key: '*** Provide your Secret Key ***',
 	server : 'https://your-endpoint'
 });
 
-var bucketName = 'my-obs-bucket-demo';
-var objectKey = 'my-obs-object-key-demo';
-var localFilePath = '/temp/' + objectKey;
+const bucketName = 'my-obs-bucket-demo';
+const objectKey = 'my-obs-object-key-demo';
+const localFilePath = path.join(os.tmpdir(), objectKey);
 
-var pathLib = require('path');
-var sampleFilePath = '/temp/test.txt';
-
-function mkdirsSync(dirname){
-    if(fs.existsSync(dirname)){
-        return true;
-    }else{
-        if(mkdirsSync(pathLib.dirname(dirname))){
-            fs.mkdirSync(dirname);
-            return true;
-        }
-    }
-}
-
-function createSampleFile(sampleFilePath){
-	if(!fs.existsSync(sampleFilePath)){
-		mkdirsSync(pathLib.dirname(sampleFilePath));
-		var fd = fs.openSync(sampleFilePath, 'w');
-		if(fd){
-			for(let i=0;i < 1000000;i++){
-				fs.writeSync(fd, String(Math.random()) + '\n');
-				fs.writeSync(fd, String(Math.random()) + '\n');
-				fs.writeSync(fd, String(Math.random()) + '\n');
-				fs.writeSync(fd, String(Math.random()) + '\n');
-			}
-			fs.closeSync(fd);
-		}
-	}
-	return sampleFilePath;
-}
-
-
-var fd = fs.openSync(localFilePath, 'w');
+const pathLib = require('path');
+const sampleFilePath = path.join(os.tmpdir(), 'test.txt');
 
 /*
  * Create bucket 
@@ -96,7 +64,7 @@ obs.createBucket({
 			/*
 			 * Create a sample file 
 			 */
-			SourceFile : createSampleFile(sampleFilePath)
+			SourceFile : createLargeSampleFileSync(sampleFilePath)
 		}).then((result) => {
 			if(result.CommonMsg.Status < 300){
 				console.log('Upload a new object to OBS from a file finished\n');
@@ -109,14 +77,14 @@ obs.createBucket({
 					Key : objectKey
 				}).then((result) => {
 					if(result.CommonMsg.Status < 300){
-						var objectSize = Number(result.InterfaceResult.ContentLength);
+						const objectSize = Number(result.InterfaceResult.ContentLength);
 						console.log('Object size from metadata:' + objectSize + '\n');
 						
 						 /*
 			             * Calculate how many blocks to be divided
 			             */
-						var blockSize = 5 * 1024 * 1024;// 5MB
-						var blockCount = Math.floor(objectSize / blockSize);
+						const blockSize = 5 * 1024 * 1024;// 5MB
+						const blockCount = Math.floor(objectSize / blockSize);
 						if(objectSize % blockSize !== 0){
 							blockCount++;
 						}
@@ -126,9 +94,13 @@ obs.createBucket({
 			             * Download the object concurrently
 			             */
 						console.log('Start to download ' + objectKey + '\n');
+						
+						// Fix 18: Open file inside the function, not at module load time
+						const fd = fs.openSync(localFilePath, 'w');
 						if(fd){
-							var finishedCount = 0;
+							let finishedCount = 0;
 							for(let i=0;i<blockCount;){
+								const blockNumber = i; // Fix 17: Capture current block number before increment
 								let startPos = i++ * blockSize;
 								let endPos = (i === blockCount) ? (objectSize - 1) : (i * blockSize - 1);
 								obs.getObject({
@@ -140,29 +112,27 @@ obs.createBucket({
 									if(result.CommonMsg.Status < 300){
 										let _startPos = startPos;
 										result.InterfaceResult.Content.on('data', (data) => {
-											fs.write(fd, data, 0, data.length, _startPos, ()=>{
-											});
+											// Fix 19: Use synchronous write to avoid concurrent write issues
+											fs.writeSync(fd, data, 0, data.length, _startPos);
 											_startPos += data.length;
 										}).on('end',() => {
-											console.log('Block#' + i + ' done\n');
+											console.log('Block#' + blockNumber + ' done\n');
 											if(++finishedCount === blockCount){
+												fs.closeSync(fd);
 												obs.deleteObject({Bucket: bucketName, Key: objectKey});
 											}
 										});
 									}
-								});
+								}).catch((err) => { console.error(err); });
 							}
 						}
 					}
-				});
+				}).catch((err) => { console.error(err); });
 			}
-		});
+		}).catch((err) => { console.error(err); });
 	}
-});
+}).catch((err) => { console.error(err); });
 
-
-var process = require('process');
-process.on('beforeExit', (code) => {
-	fs.closeSync(fd);
+process.on('beforeExit', async () => {
 	obs.close();
 });

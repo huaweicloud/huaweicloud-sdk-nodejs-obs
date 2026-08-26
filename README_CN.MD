@@ -1,4 +1,16 @@
-﻿Version 3.26.2
+﻿Version 3.26.8
+新特性：
+1. 支持桶清单相关接口（setBucketInventory、getBucketInventory、listBucketInventory、deleteBucketInventory）
+2. 支持WORM特性相关接口（setObjectLockConfiguration、getObjectLockConfiguration、setObjectRetention）
+3. 支持镜像回源相关接口（setBucketMirrorBackToSource、getBucketMirrorBackToSource、deleteBucketMirrorBackToSource）
+4. 支持在线解压相关接口（setBucketCompressPolicy、getBucketCompressPolicy、deleteBucketCompressPolicy）
+5. 支持截断对象接口（truncateObject）
+
+资料&demo：无
+
+-----------------------------------------------------------------------------------
+
+Version 3.26.2
 新特性：
 1. 支持.wasm对象上传时自动设置contentType为application/wasm
 

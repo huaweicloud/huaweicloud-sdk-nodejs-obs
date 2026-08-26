@@ -15,18 +15,14 @@
 
 'use strict';
 
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
-var process = require('process');
+const process = require('process');
 
 /*
  * Catch uncatught exception
@@ -39,7 +35,7 @@ process.on('uncaughtException', function (err) {
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: '*** Provide your Access Key ***',
 	secret_access_key: '*** Provide your Secret Key ***',
 	server : 'https://your-endpoint'
@@ -48,7 +44,7 @@ var obs = new ObsClient({
 /*
  * Initialize obs sdk log
  */
-obs.InitLog({
+obs.initLog({
 	name : 'test',
 	file_full_path:'./logs/OBS-SDK.log',
 	max_log_size: 10 * 1024 * 1024, //10MB
@@ -111,7 +107,7 @@ function headBucket(){
 		if(result.CommonMsg.Status === 200){
 			console.log('bucket exists');
 		}else if(result.CommonMsg.Status === 404){
-			console.log('bucket doesnot exist');
+			console.log('bucket does not exist');
 		}else{
 			console.log('Status-->' + result.CommonMsg.Status);
 		}
@@ -123,7 +119,7 @@ function headBucket(){
 
 //get bucket metadata
 function getBucketMetadata(){
-	obs.GetBucketMetadata({
+	obs.getBucketMetadata({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -146,7 +142,7 @@ function getBucketMetadata(){
 
 //delete bucket
 function deleteBucket(){
-	obs.DeleteBucket({
+	obs.deleteBucket({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -165,7 +161,7 @@ function deleteBucket(){
 
 //list objects in bucket
 function listObjects(){
-	obs.ListObjects({
+	obs.listObjects({
 		Bucket: 'bucket001',
 		MaxKeys: 10,
 	}).then(function(result){
@@ -207,7 +203,7 @@ function listObjects(){
 
 //list versions in bucket
 function listVersions(){
-	obs.ListVersions({
+	obs.listVersions({
 		Bucket:'bucket001',
 		MaxKeys:10,	
 	}).then(function(result){
@@ -264,7 +260,7 @@ function listVersions(){
 
 //get bucket location
 function getBucketLocation(){
-	obs.GetBucketLocation({
+	obs.getBucketLocation({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -285,7 +281,7 @@ function getBucketLocation(){
 
 //get bucket storage information
 function getBucketStorageInfo(){
-	obs.GetBucketStorageInfo({
+	obs.getBucketStorageInfo({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -306,7 +302,7 @@ function getBucketStorageInfo(){
 
 //set bucket storage information
 function setBucketQuota(){
-	obs.SetBucketQuota({
+	obs.setBucketQuota({
 		Bucket:'bucket001',
 		StorageQuota:1048576000,
 	}).then(function(result){
@@ -327,7 +323,7 @@ function setBucketQuota(){
 
 //get bucket quota
 function getBucketQuota(){
-	obs.GetBucketQuota({
+	obs.getBucketQuota({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -348,7 +344,7 @@ function getBucketQuota(){
 
 //set bucket acl
 function setBucketAcl(){
-	obs.SetBucketAcl({
+	obs.setBucketAcl({
 		Bucket:'bucket001',
 		Owner:{ID:'ownerid'},
 		Grants:[
@@ -373,7 +369,7 @@ function setBucketAcl(){
 
 //get bucket acl
 function getBucketAcl(){
-	obs.GetBucketAcl({
+	obs.getBucketAcl({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -400,7 +396,7 @@ function getBucketAcl(){
 
 //set bucket logging
 function setBucketLogging(){
-	obs.SetBucketLogging({
+	obs.setBucketLogging({
 		Bucket:'bucket001',
 		Agency : 'test',
 		LoggingEnabled:{
@@ -429,7 +425,7 @@ function setBucketLogging(){
 
 //get bucket logging
 function getBucketLogging(){
-	obs.GetBucketLogging({
+	obs.getBucketLogging({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -460,7 +456,7 @@ function getBucketLogging(){
 
 //set bucket policy
 function setBucketPolicy(){
-	obs.SetBucketPolicy({
+	obs.setBucketPolicy({
 		Bucket:'bucket001',
 		Policy:'your policy'
 	}).then(function(result){
@@ -481,7 +477,7 @@ function setBucketPolicy(){
 
 //get bucket policy
 function getBucketPolicy(){
-	obs.GetBucketPolicy({
+	obs.getBucketPolicy({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -501,7 +497,7 @@ function getBucketPolicy(){
 
 //delete bucket policy
 function deleteBucketPolicy(){
-	obs.DeleteBucketPolicy({
+	obs.deleteBucketPolicy({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -521,7 +517,7 @@ function deleteBucketPolicy(){
 
 //set bucket lifecycle
 function setBucketLifecycle(){
-	obs.SetBucketLifecycle({
+	obs.setBucketLifecycle({
 		Bucket: 'bucket001',
 		Rules:[
 			{ID:'rule1',Prefix:'prefix1',Status:'Enabled',Expiration:{Days: 100}, 
@@ -546,7 +542,7 @@ function setBucketLifecycle(){
 
 //get bucket lifecycle
 function getBucketLifecycle(){
-	obs.GetBucketLifecycle({
+	obs.getBucketLifecycle({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -586,7 +582,7 @@ function getBucketLifecycle(){
 
 //delete bucket lifecycle
 function deleteBucketLifecycle(){
-	obs.DeleteBucketLifecycle({
+	obs.deleteBucketLifecycle({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -605,13 +601,9 @@ function deleteBucketLifecycle(){
 
 //set bucket website
 function setBucketWebsite(){
-	obs.SetBucketWebsite({
+	obs.setBucketWebsite({
 		Bucket:'bucket001',
 		RedirectAllRequestsTo : {HostName : 'www.example.com', Protocol : 'https'}
-//		IndexDocument:{'Suffix':'index.html'},
-//		ErrorDocument:{'Key':'error.html'},
-//		RoutingRules:[
-//			{'Condition':{'HttpErrorCodeReturnedEquals':'404'},'Redirect':{'Protocol':'http','ReplaceKeyWith':'NotFound.html'}},
 //			               {'Condition':{'HttpErrorCodeReturnedEquals':'404'},'Redirect':{'Protocol':'http','ReplaceKeyWith':'test.html'}}]
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -630,7 +622,7 @@ function setBucketWebsite(){
 
 //get bucket website
 function getBucketWebsite(){
-	obs.GetBucketWebsite({
+	obs.getBucketWebsite({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -666,7 +658,7 @@ function getBucketWebsite(){
 
 //delete bucket website
 function deleteBucketWebsite(){
-	obs.DeleteBucketWebsite({
+	obs.deleteBucketWebsite({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -685,7 +677,7 @@ function deleteBucketWebsite(){
 
 //set bucket versioning
 function setBucketVersioning(){
-	obs.SetBucketVersioning({
+	obs.setBucketVersioning({
 		Bucket:'bucket001',
 		VersionStatus:'Enabled',
 	}).then(function(result){
@@ -705,7 +697,7 @@ function setBucketVersioning(){
 
 //get bucket versioning
 function getBucketVersioning(){
-	obs.GetBucketVersioning({
+	obs.getBucketVersioning({
 		Bucket:'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -725,7 +717,7 @@ function getBucketVersioning(){
 
 //set bucket cors
 function setBucketCors(){
-	obs.SetBucketCors({
+	obs.setBucketCors({
 		Bucket:'bucket001',
 		CorsRules:[
 		    {
@@ -760,7 +752,7 @@ function setBucketCors(){
 
 //get bucket cors
 function getBucketCors(){
-	obs.GetBucketCors({
+	obs.getBucketCors({
 		'Bucket':'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -796,7 +788,7 @@ function getBucketCors(){
 
 //delete bucket cors
 function deleteBucketCors(){
-	obs.DeleteBucketCors({
+	obs.deleteBucketCors({
 		'Bucket':'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -816,7 +808,7 @@ function deleteBucketCors(){
 
 //set bucket tagging
 function setBucketTagging(){
-	obs.SetBucketTagging({
+	obs.setBucketTagging({
 		'Bucket' : 'bucket001',
 		'Tags' : [
 			{'Key':'testKey1','Value':'testValue1'}, {'Key':'testKey2', 'Value':'testValue2'}
@@ -838,7 +830,7 @@ function setBucketTagging(){
 
 //get bucket tagging
 function getBucketTagging(){
-	obs.GetBucketTagging({
+	obs.getBucketTagging({
 		'Bucket' : 'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -861,7 +853,7 @@ function getBucketTagging(){
 
 //delete bucket tagging
 function deleteBucketTagging(){
-	obs.DeleteBucketTagging({
+	obs.deleteBucketTagging({
 		'Bucket' : 'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -880,7 +872,7 @@ function deleteBucketTagging(){
 
 //set bucket notification
 function setBucketNotification(){
-	obs.SetBucketNotification({
+	obs.setBucketNotification({
 		'Bucket' : 'bucket001',
 		'TopicConfigurations' : [
 			{
@@ -910,7 +902,7 @@ function setBucketNotification(){
 
 //get bucket notification
 function getBucketNotification(){
-	obs.GetBucketNotification({
+	obs.getBucketNotification({
 		'Bucket' : 'bucket001',
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -943,7 +935,7 @@ function getBucketNotification(){
 
 //set bucket storage policy
 function setBucketStoragePolicy(){
-	obs.SetBucketStoragePolicy({
+	obs.setBucketStoragePolicy({
 		'Bucket' : 'bucket001',
 		'StorageClass' : obs.enums.StorageClassWarm
 	}).then(function(result){
@@ -959,7 +951,7 @@ function setBucketStoragePolicy(){
 
 //get bucket storage policy
 function getBucketStoragePolicy(){
-	obs.GetBucketStoragePolicy({
+	obs.getBucketStoragePolicy({
 		'Bucket' : 'bucket001'
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -977,7 +969,7 @@ function getBucketStoragePolicy(){
 
 //delete object
 function deleteObject(){
-	obs.DeleteObject({
+	obs.deleteObject({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 	}).then(function(result){
@@ -999,7 +991,7 @@ function deleteObject(){
 
 //batch delete objects
 function deleteObjects(){
-	obs.DeleteObjects({
+	obs.deleteObjects({
 		'Bucket':'bucket001',
 		'Quiet':false,
 		'Objects':[{'Key':'test.txt'},{'Key':'src/中文.txt'}]
@@ -1036,7 +1028,7 @@ function deleteObjects(){
 
 //get object metadata
 function getObjectMetadata(){
-	obs.GetObjectMetadata({
+	obs.getObjectMetadata({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 	}).then(function(result){
@@ -1063,7 +1055,7 @@ function getObjectMetadata(){
 
 //set object acl
 function setObjectAcl(){
-	obs.SetObjectAcl({
+	obs.setObjectAcl({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 		'Owner':{'ID':'ownerid'},
@@ -1088,7 +1080,7 @@ function setObjectAcl(){
 
 //get object acl
 function getObjectAcl(){
-	obs.GetObjectAcl({
+	obs.getObjectAcl({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 	}).then(function(result){
@@ -1117,7 +1109,7 @@ function getObjectAcl(){
 
 //restore cold object
 function restoreObject(){
-	obs.RestoreObject({
+	obs.restoreObject({
 		Bucket :'bucket001',
 		Key :'test.txt',
 		Days : 1,
@@ -1140,7 +1132,7 @@ function restoreObject(){
 
 //copy object
 function copyObject(){
-	obs.CopyObject({
+	obs.copyObject({
 		Bucket:'bucket001',
 		Key:'test.txt',
 		CopySource:'bucket003/test.txt',
@@ -1166,7 +1158,7 @@ function copyObject(){
 
 //initiate multipart upload
 function initiateMultipartUpload(){
-	obs.InitiateMultipartUpload({
+	obs.initiateMultipartUpload({
 		Bucket:'bucket001',
 		Key:'test.txt',
 		ContentType : 'text/plain'
@@ -1191,7 +1183,7 @@ function initiateMultipartUpload(){
 
 //list multipart uploads
 function listMultipartUploads(){
-	obs.ListMultipartUploads({
+	obs.listMultipartUploads({
 		'Bucket':'bucket001',
 		'MaxUploads':20,
 	}).then(function(result){
@@ -1235,7 +1227,7 @@ function listMultipartUploads(){
 
 //abort multipart upload
 function abortMultipartUpload(){
-	obs.AbortMultipartUpload({
+	obs.abortMultipartUpload({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 		'UploadId':'uploadid',
@@ -1257,7 +1249,7 @@ function abortMultipartUpload(){
 
 //copy part
 function copyPart(){
-	obs.CopyPart({
+	obs.copyPart({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 		'PartNumber':1,
@@ -1282,7 +1274,7 @@ function copyPart(){
 
 //list parts
 function listParts(){
-	obs.ListParts({
+	obs.listParts({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 		'UploadId':'uploadid',
@@ -1322,11 +1314,11 @@ function listParts(){
 
 //upload object
 function putObject(){
-	obs.PutObject({
+	obs.putObject({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 		'Metadata':{'key':'value'},
-		'SourceFile' : '/temp/test.txt',
+		'SourceFile' : path.join(os.tmpdir(), 'test.txt'),
 		'ContentType': 'text/plain'
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -1348,12 +1340,12 @@ function putObject(){
 
 //append object
 function appendObject(){
-	obs.AppendObject({
+	obs.appendObject({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 		'Position' : 0,
 		'Metadata':{'key':'value'},
-		'SourceFile' : '/temp/test.txt',
+		'SourceFile' : path.join(os.tmpdir(), 'test.txt'),
 		'ContentType': 'text/plain'
 	}).then(function(result){
 		console.log('CommonMsg:');
@@ -1373,12 +1365,12 @@ function appendObject(){
 
 //upload part
 function uploadPart(){
-	obs.UploadPart({
+	obs.uploadPart({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 		'PartNumber':1,
 		'UploadId':'uploadid',
-		'SourceFile': '/temp/test.txt',
+		'SourceFile': path.join(os.tmpdir(), 'test.txt'),
 	}).then(function(result){
 		console.log('CommonMsg:');
 		console.log('Status-->' + result.CommonMsg.Status);
@@ -1397,7 +1389,7 @@ function uploadPart(){
 
 //merge parts
 function completeMultipartUpload(){
-	obs.CompleteMultipartUpload({
+	obs.completeMultipartUpload({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 		'UploadId':'uploadid',
@@ -1424,11 +1416,11 @@ function completeMultipartUpload(){
 
 //get object
 function getObject(){
-	obs.GetObject({
+	obs.getObject({
 		'Bucket':'bucket001',
 		'Key':'test.txt',
 		'Range':'bytes=0-10',
-		'SaveAsFile':'/temp/file.log'
+		'SaveAsFile':path.join(os.tmpdir(), 'file.log')
 	}).then(function(result){
 		console.log('CommonMsg:');
 		console.log('Status-->' + result.CommonMsg.Status);
@@ -1452,65 +1444,3 @@ function getObject(){
 		console.log('err:' + err);
 	});
 }
-
-
-//===================bucket related operations=============================
-
-//createBucket();
-//listBuckets();
-//headBucket();
-//getBucketMetadata();
-//deleteBucket();
-//listObjects();
-//listVersions();
-//getBucketLocation();
-//getBucketStorageInfo();
-//setBucketQuota();
-//getBucketQuota();
-//setBucketAcl();
-//getBucketAcl();
-//setBucketLogging();
-//getBucketLogging();
-//setBucketPolicy();
-//getBucketPolicy();
-//deleteBucketPolicy();
-//setBucketLifecycle();
-//getBucketLifecycle();
-//deleteBucketLifecycle();
-//setBucketWebsite();
-//getBucketWebsite();
-//deleteBucketWebsite();
-//setBucketVersioning();
-//getBucketVersioning();
-//setBucketCors();
-//getBucketCors();
-//deleteBucketCors();
-//optionsBucket();
-//setBucketTagging();
-//getBucketTagging();
-//deleteBucketTagging();
-//setBucketNotification();
-//getBucketNotification();
-//setBucketStoragePolicy();
-//getBucketStoragePolicy();
-
-//===================object related operations=============================
-//putObject();
-//appendObject();
-//getObject();
-//copyObject();
-//deleteObject();
-//deleteObjects();
-//getObjectMetadata();
-//setObjectAcl();
-//getObjectAcl();
-//optionsObject();
-//restoreObject();
-//initiateMultipartUpload();
-//listMultipartUploads();
-//abortMultipartUpload();
-//copyPart();
-//listParts();
-//uploadPart();
-//completeMultipartUpload();
-

@@ -19,61 +19,34 @@
  */
 
 'use strict';
-var fs = require('fs');
+const os = require('os');
+const path = require('path');
+const fs = require('fs');
+const { mkdirsSync, createSampleFileSync } = require('./utils');
  
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
 
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: '*** Provide your Access Key ***',
 	secret_access_key: '*** Provide your Secret Key ***',
 	server : 'https://your-endpoint'
 });
 
 
-var pathLib = require('path');
-var sampleFilePath = '/temp/test.txt';
+const pathLib = require('path');
+const sampleFilePath = path.join(os.tmpdir(), 'test.txt');
 
-function mkdirsSync(dirname){
-    if(fs.existsSync(dirname)){
-        return true;
-    }else{
-        if(mkdirsSync(pathLib.dirname(dirname))){
-            fs.mkdirSync(dirname);
-            return true;
-        }
-    }
-}
-
-function createSampleFileSync(sampleFilePath){
-	if(!fs.existsSync(sampleFilePath)){
-		mkdirsSync(pathLib.dirname(sampleFilePath));
-		var fd = fs.openSync(sampleFilePath, 'w');
-		if(fd){
-			fs.writeSync(fd, String(Math.random()) + '\n');
-			fs.writeSync(fd, String(Math.random()) + '\n');
-			fs.writeSync(fd, String(Math.random()) + '\n');
-			fs.writeSync(fd, String(Math.random()) + '\n');
-			fs.closeSync(fd);
-		}
-	}
-	return sampleFilePath;
-}
-
-var bucketName = 'my-obs-bucket-demo';
-var objectKey = 'my-obs-object-key-demo';
+const bucketName = 'my-obs-bucket-demo';
+const objectKey = 'my-obs-object-key-demo';
 
 
 /*
@@ -111,7 +84,7 @@ obs.createBucket({
 			}
 		});
 		
-		var localFilePath = '/temp/' + objectKey;
+		const localFilePath = path.join(os.tmpdir(), objectKey);
 		/*
          * Download the object to a file
          */
@@ -123,11 +96,10 @@ obs.createBucket({
 			console.log('Download the object to a file finished.\n');
 		});
 	}
-});
+}).catch((err) => { console.error(err); });
 
-var isDeleteObjectFinished = false; 
-var process = require('process');
-process.on('beforeExit', (code) => {
+let isDeleteObjectFinished = false; 
+process.on('beforeExit', async () => {
 	if(fs.existsSync(sampleFilePath)){
 		fs.unlinkSync(sampleFilePath);
 	}
@@ -143,7 +115,7 @@ process.on('beforeExit', (code) => {
 				console.log('Delete object ' + objectKey +  ' finished.\n');
 			}
 			obs.close();
-		});
+		}).catch((err) => { console.error(err); });
 		isDeleteObjectFinished = true;
 	}
 });

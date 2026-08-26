@@ -19,24 +19,20 @@
  */
 'use strict';
  
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
-var events = require('events');
-var eventEmitter = new events.EventEmitter();
+const events = require('events');
+const eventEmitter = new events.EventEmitter();
 
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: '*** Provide your Access Key ***',
 	secret_access_key: '*** Provide your Secret Key ***',
 	server : 'http://your-endpoint',
@@ -44,16 +40,16 @@ var obs = new ObsClient({
 });
 
 
-var bucketName = 'my-obs-bucket-demo';
-var objectKey = 'my-obs-object-key-demo';
+const bucketName = 'my-obs-bucket-demo';
+const objectKey = 'my-obs-object-key-demo';
 
-var http = require('http');
-var urlLib = require('url');
-var crypto = require('crypto');
+const http = require('http');
+const urlLib = require('url');
+const crypto = require('crypto');
 
 function doAction(msg,method, _url, content,headers){
-	var url = urlLib.parse(_url);
-	var req = http.request({
+	const url = urlLib.parse(_url);
+	const req = http.request({
 		method : method,
 		host : url.hostname,
 		port : url.port,
@@ -63,7 +59,7 @@ function doAction(msg,method, _url, content,headers){
 	});
 
 	req.on('response', 	(serverback) => {
-		var buffers = [];
+		const buffers = [];
 		serverback.on('data', (data) => {
 			buffers.push(data);
 		}).on('end', () => {
@@ -76,7 +72,7 @@ function doAction(msg,method, _url, content,headers){
 				console.log('status:' + serverback.statusCode);
 				console.log('\n');
 			}
-			buffers = Buffer.concat(buffers);
+			let result = Buffer.concat(buffers);
 			if(buffers.length > 0){
 				console.log(buffers.toString());
 			}
@@ -193,7 +189,7 @@ eventEmitter.on('Delete object', ()=>{
 });
 
 
-var process = require('process');
-process.on('beforeExit', (code) => {
+const process = require('process');
+process.on('beforeExit', async () => {
 	obs.close();
 });

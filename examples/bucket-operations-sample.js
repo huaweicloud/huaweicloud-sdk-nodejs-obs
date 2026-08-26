@@ -21,28 +21,33 @@
 
 'use strict';
  
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
 
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
-	access_key_id: '*** Provide your Access Key ***',
-	secret_access_key: '*** Provide your Secret Key ***',
-	server : 'https://your-endpoint'
+const obs = new ObsClient({
+	access_key_id: '*** Your Access Key ***',
+	secret_access_key: '*** Your Secret Key ***',
+	server : '*** Your Server Adress ***'
 });
 
-var bucketName = 'my-obs-bucket-demo';
+const bucketName = 'my-obs-new-bucket-demo';
+
+// 
+const certificateParams = {
+  Name: '*** Your Certificate Name ***',
+  CertificateId: '*** Your Certificate Id ***',
+  Certificate: '*** Your Certificate ***',
+  CertificateChain: '*** Your Certificate Chain ***',
+  PrivateKey:'*** Your Private Key ***'
+}
 
 /*
  * Put bucket operation
@@ -220,7 +225,7 @@ obs.createBucket({
 		if(result && result.CommonMsg.Status < 300){
 			console.log('Get bucket CORS:');
 			for(let k=0;k<result.InterfaceResult.CorsRules.length;k++){
-				console.log('\tCorsRule[',k,']');
+				console.log('\tCorsRule[' + k + ']');
 				console.log('\tCorsRule[ID]-->' + result.InterfaceResult.CorsRules[k]['ID']);
 				console.log('\tCorsRule[MaxAgeSeconds]-->' + result.InterfaceResult.CorsRules[k]['MaxAgeSeconds']);
 				for (let i=0;i<result.InterfaceResult.CorsRules[k]['AllowedMethod'].length;i++){
@@ -272,14 +277,14 @@ obs.createBucket({
 		]
 	}).then((result) => {
 		if(result.CommonMsg.Status < 300){
-			console.log('Set bucket lifecyle finished.\n');
+			console.log('Set bucket lifecycle finished.\n');
 			return obs.getBucketLifecycleConfiguration({
 				Bucket : bucketName
 			});
 		}
 	}).then((result) => {
 		if(result && result.CommonMsg.Status < 300){
-			console.log('Get bucket lifecyle:');
+			console.log('Get bucket lifecycle:');
 			for(let i=0;i<result.InterfaceResult.Rules.length;i++){
 				console.log('Rule[' + i + ']:');
 				console.log('ID-->' + result.InterfaceResult.Rules[i]['ID']);
@@ -301,7 +306,7 @@ obs.createBucket({
 		}
 	}).then((result) => {
 		if(result && result.CommonMsg.Status < 300){
-			console.log('Delete bucket lifecyle finished.\n');
+			console.log('Delete bucket lifecycle finished.\n');
 		}
 	});
 	
@@ -325,7 +330,7 @@ obs.createBucket({
 		if(result && result.CommonMsg.Status < 300){
 			console.log('Get bucket website:');
 			console.log('\tIndexDocument[Suffix]-->' + result.InterfaceResult.IndexDocument['Suffix']);
-			console.log('\tErrorDocument[Key]-->' + result.InterfaceResult.IndexDocument['Key']);
+			console.log('\tErrorDocument[Key]-->' + result.InterfaceResult.ErrorDocument['Key']);
 			console.log('\n');
 			return obs.deleteBucketWebsiteConfiguration({
 				Bucket : bucketName
@@ -368,16 +373,48 @@ obs.createBucket({
 			console.log('Delete bucket tagging finished.\n');
 		}
 	});
+
+
+	/*
+     * Put/Get/Delete bucket custom domain operations
+     */
+	//CustomDomainConfiguration is optional and valid certificate needed
+	obs.setBucketCustomDomain({
+		Bucket: bucketName,
+		DomainName: "www.testcustomdomain.com",
+		//DomainBody: certificateParams
+	}).then((result) => {
+		if(result.CommonMsg.Status < 300){
+			console.log('Set bucket custom domain finished.\n');
+			return obs.getBucketCustomDomain({
+		 		Bucket: bucketName,
+			});
+		}
+	}).then((result) => {
+		if(result && result.CommonMsg.Status < 300){
+			console.log('Get bucket custom domain:');
+			console.log('\n');
+			console.log('Domain object: ', result.InterfaceResult.Domains);
+			return obs.deleteBucketCustomDomain({
+				Bucket: bucketName,
+    		DomainName: "www.testcustomdomain.com",
+			});
+		}
+	}).then((result) => {
+		if(result && result.CommonMsg.Status < 300){
+			console.log('Delete bucket custom domain finished.\n');
+		}
+	});
 	
 }).catch(function(err){
 	console.error('err:' + err);
 });
 
 
-var process = require('process');
-var deleteFinished = false;
+const process = require('process');
+let deleteFinished = false;
 
-process.on('beforeExit', (code) => {
+process.on('beforeExit', async () => {
 	if(!deleteFinished){
 		/*
 		 * Delete bucket operation
@@ -393,6 +430,7 @@ process.on('beforeExit', (code) => {
 			obs.close();
 		}).catch(function(err){
 			console.log('Delete bucket failed.\n');
+			obs.close();
 		});
 		deleteFinished = true;
 	}

@@ -19,63 +19,34 @@
  */
 
 'use strict';
-var fs = require('fs');
+const os = require('os');
+const path = require('path');
+const fs = require('fs');
+const { mkdirsSync, createLargeSampleFileSync } = require('./utils');
  
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: '*** Provide your Access Key ***',
 	secret_access_key: '*** Provide your Secret Key ***',
 	server : 'https://your-endpoint'
 });
 
-var bucketName = 'my-obs-bucket-demo';
-var sourceBucketName = bucketName;
-var sourceObjectKey = 'my-obs-object-key-demo';
-var objectKey = sourceObjectKey + '-back';
+const bucketName = 'my-obs-bucket-demo';
+const sourceBucketName = bucketName;
+const sourceObjectKey = 'my-obs-object-key-demo';
+const objectKey = sourceObjectKey + '-back';
 
-var pathLib = require('path');
-var sampleFilePath = '/temp/test.txt';
-
-function mkdirsSync(dirname){
-    if(fs.existsSync(dirname)){
-        return true;
-    }else{
-        if(mkdirsSync(pathLib.dirname(dirname))){
-            fs.mkdirSync(dirname);
-            return true;
-        }
-    }
-}
-
-function createSampleFileSync(sampleFilePath){
-	if(!fs.existsSync(sampleFilePath)){
-		mkdirsSync(pathLib.dirname(sampleFilePath));
-		var fd = fs.openSync(sampleFilePath, 'w');
-		if(fd){
-			for(let i=0;i < 1000000;i++){
-				fs.writeSync(fd, String(Math.random()) + '\n');
-				fs.writeSync(fd, String(Math.random()) + '\n');
-				fs.writeSync(fd, String(Math.random()) + '\n');
-				fs.writeSync(fd, String(Math.random()) + '\n');
-			}
-			fs.closeSync(fd);
-		}
-	}
-	return sampleFilePath;
-}
+const pathLib = require('path');
+const sampleFilePath = path.join(os.tmpdir(), 'test.txt');
 
 /*
  * Create bucket 
@@ -94,7 +65,7 @@ obs.createBucket({
 			/*
 			 * Create a sample file 
 			 */
-			SourceFile : createSampleFileSync(sampleFilePath)
+			SourceFile : createLargeSampleFileSync(sampleFilePath)
 		}).then((result) => {
 			if(result.CommonMsg.Status < 300){
 				console.log('Upload a new object to OBS from a file finished\n');
@@ -106,21 +77,21 @@ obs.createBucket({
 					Key : objectKey
 				}).then((result) => {
 					if(result.CommonMsg.Status < 300){
-						var uploadId = result.InterfaceResult.UploadId;
+						const uploadId = result.InterfaceResult.UploadId;
 						console.log('Claim a new upload id ' + uploadId + '\n');
-						var partSize = 5 * 1024 * 1024;// 5MB
+						const partSize = 5 * 1024 * 1024;// 5MB
 						obs.getObjectMetadata({
 							Bucket : sourceBucketName,
 							Key : sourceObjectKey
 						}).then((result) => {
 							if(result.CommonMsg.Status < 300){
-								var objectSize = Number(result.InterfaceResult.ContentLength);
-								var partCount = objectSize % partSize === 0 ? Math.floor(objectSize / partSize) : Math.floor(objectSize / partSize) + 1;
+								const objectSize = Number(result.InterfaceResult.ContentLength);
+								const partCount = objectSize % partSize === 0 ? Math.floor(objectSize / partSize) : Math.floor(objectSize / partSize) + 1;
 								console.log('Total parts count ' + partCount  + '\n'); 
 								
-								var events = require('events');
-								var eventEmitter = new events.EventEmitter();
-								var parts = [];
+								const events = require('events');
+								const eventEmitter = new events.EventEmitter();
+								const parts = [];
 								/*
 					             * Upload multiparts by copy mode
 					             */
@@ -143,13 +114,13 @@ obs.createBucket({
 												/*
 												 * Sort parts order by partNumber asc
 												 */
-												var _parts = parts.sort((a, b) => {
+												parts.sort((a, b) => {
 													if(a.PartNumber >= b.PartNumber){
 														return 1;
 													}
 													return -1;
 												});
-												eventEmitter.emit('copy part finished', _parts);
+												eventEmitter.emit('copy part finished', parts);
 											}
 										}else{
 											throw new Error(result.CommonMsg.Code);
@@ -204,10 +175,9 @@ obs.createBucket({
 			}
 		});
 	}
-});
+}).catch((err) => { console.error(err); });
 
-var process = require('process');
-process.on('beforeExit', (code) => {
+process.on('beforeExit', async () => {
 	obs.close();
 });
 

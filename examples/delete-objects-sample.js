@@ -20,28 +20,24 @@
 
 'use strict';
  
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
 
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: '*** Provide your Access Key ***',
 	secret_access_key: '*** Provide your Secret Key ***',
 	server : 'https://your-endpoint'
 });
 
-var bucketName = 'my-obs-bucket-demo';
+const bucketName = 'my-obs-bucket-demo';
 
 /*
  * Create bucket 
@@ -52,16 +48,16 @@ obs.createBucket({
 	if(result.CommonMsg.Status < 300){
 		console.log('Create bucket for demo\n');
 		
-		var events = require('events');
-		var eventEmitter = new events.EventEmitter();
-		var keys = [];
+		const events = require('events');
+		const eventEmitter = new events.EventEmitter();
+		const keys = [];
 		
 		 /*
          * Batch put objects into the bucket
          */
-		var content = 'Thank you for using Object Storage Servic';
-		var keyPrefix = 'MyObjectKey';
-		var finishedCount = 0;
+		const content = 'Thank you for using Object Storage Service';
+		const keyPrefix = 'MyObjectKey';
+		let finishedCount = 0;
 		
 		for(let i=0;i<100;i++){
 			let key = keyPrefix + i;
@@ -115,11 +111,9 @@ obs.createBucket({
 			});
 		});
 	}
-});
+}).catch((err) => { console.error(err); });
 
-
-var process = require('process');
-process.on('beforeExit', (code) => {
+process.on('beforeExit', async () => {
 	obs.close();
 });
 

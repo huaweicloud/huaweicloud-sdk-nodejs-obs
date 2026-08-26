@@ -19,29 +19,27 @@
  */
 
 'use strict';
+const os = require('os');
+const path = require('path');
  
-var ObsClient;
+let ObsClient;
 try{
 	ObsClient = require('esdk-obs-nodejs');
 }catch(e){
-	try{
-		ObsClient = require('./lib/obs');
-	}catch(e){
-		ObsClient = require('../lib/obs');//sample env
-	}
+	ObsClient = require('./lib/obs');
 }
 
 
 /*
  * Initialize a obs client instance with your account for accessing OBS
  */
-var obs = new ObsClient({
+const obs = new ObsClient({
 	access_key_id: '*** Provide your Access Key ***',
 	secret_access_key: '*** Provide your Secret Key ***',
 	server : 'https://your-endpoint'
 });
 
-var bucketName = 'my-obs-bucket-demo';
+const bucketName = 'my-obs-bucket-demo';
 
 /*
  * Create bucket 
@@ -55,7 +53,7 @@ obs.createBucket({
         /*
          * Way 1:
          */
-		var keySuffixWithSlash1 = 'MyObjectKey1/';
+		const keySuffixWithSlash1 = 'MyObjectKey1/';
 		obs.putObject({
 			Bucket : bucketName,
 			Key : keySuffixWithSlash1
@@ -67,7 +65,7 @@ obs.createBucket({
 	             */
 				return obs.getObjectMetadata({
 					Bucket : bucketName,
-					Key : keySuffixWithSlash1
+					Key : keySuffixWithSlash2
 				});
 			}
 		}).then((result) => {
@@ -79,7 +77,7 @@ obs.createBucket({
         /*
          * Way 2:
          */
-		var keySuffixWithSlash2 = 'MyObjectKey2/';
+		const keySuffixWithSlash2 = 'MyObjectKey2/';
 		obs.putObject({
 			Bucket : bucketName,
 			Key : keySuffixWithSlash2,
@@ -102,11 +100,9 @@ obs.createBucket({
 		});
 		
 	}
-});
+}).catch((err) => { console.error(err); });
 
-
-var process = require('process');
-process.on('beforeExit', (code) => {
+process.on('beforeExit', async () => {
 	obs.close();
 });
 

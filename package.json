@@ -1,25 +1,22 @@
 {
-  "name": "esdk-obs-nodejs",
-  "version": "3.26.2",
+  "name": "@cloud/esdk-obs-nodejs",
+  "version": "3.26.8",
   "description": "esdk-obs-nodejs",
   "engines": {
-    "node": ">=0.12.7"
+    "node": ">=10.12.0"
+  },
+  "scripts": {
+    "test": "jest --runInBand",
+    "test:coverage": "jest --coverage"
   },
   "dependencies": {
-    "log4js": "^6.3.0",
-    "fast-xml-parser": "^4.0.11"
+    "fast-xml-parser": "5.3.7",
+    "log4js": "^6.3.0"
   },
-  "main" : "lib/obs.js",
-  "devDependencies": {},
-  "directories": {
-     "example": "examples",
-     "lib": "lib"
-  },
-  
-  "scripts": {
-      "test": "echo \"Error:no test specified\" && exit 1"
-  },
-  "author": "",
-  
-  "license": "Apache-2.0"
+  "main": "lib/obs.js",
+  "devDependencies": {
+    "dotenv": "^10.0.0",
+    "jest": "^27.0.6",
+    "jest-html-reporters": "^2.1.6"
+  }
 }
