@@ -1,4 +1,4 @@
-﻿Version 3.26.8
+﻿Version 3.26.9
 New Features:
 1. Supported bucket inventory APIs (setBucketInventory, getBucketInventory, listBucketInventory, deleteBucketInventory)
 2. Supported WORM feature APIs (setObjectLockConfiguration, getObjectLockConfiguration, setObjectRetention)
