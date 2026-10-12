@@ -1,4 +1,4 @@
-﻿Version 3.26.8
+﻿Version 3.26.9
 新特性：
 1. 支持桶清单相关接口（setBucketInventory、getBucketInventory、listBucketInventory、deleteBucketInventory）
 2. 支持WORM特性相关接口（setObjectLockConfiguration、getObjectLockConfiguration、setObjectRetention）
