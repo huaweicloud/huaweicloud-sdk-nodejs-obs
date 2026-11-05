@@ -1,4 +1,12 @@
-﻿Version 3.26.9
+﻿Version 3.26.10
+修复问题：
+1. 优化了断点续传上传和断点续传下载的并发逻辑，提升了断点续传上传和断点续传下载的速度。
+
+资料&demo：无
+
+-----------------------------------------------------------------------------------
+
+Version 3.26.9
 新特性：
 1. 支持桶清单相关接口（setBucketInventory、getBucketInventory、listBucketInventory、deleteBucketInventory）
 2. 支持WORM特性相关接口（setObjectLockConfiguration、getObjectLockConfiguration、setObjectRetention）
